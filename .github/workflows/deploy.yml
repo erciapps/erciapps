@@ -17,32 +17,39 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 1️⃣ Instala y configura PNPM antes que nada
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9  # puedes ajustar según tu versión local
+
+      # 2️⃣ Configura Node.js y activa caché para pnpm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9  # o la versión que uses localmente
-
+      # 3️⃣ Instala dependencias
       - name: Install dependencies
         run: pnpm install
 
+      # 4️⃣ Construye el proyecto
       - name: Build project
         run: pnpm run build
 
+      # 5️⃣ Sube el contenido generado (dist/) como artefacto
       - name: Upload build output
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
+  # 6️⃣ Despliega en GitHub Pages
   deploy:
     needs: build
     runs-on: ubuntu-latest
