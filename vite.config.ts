@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
-// Configuración para Vite + React sin servidor Express
 export default defineConfig({
+  base: "/erciapps/", // 👈 importante: ruta del repo o tu dominio personalizado
   plugins: [react()],
   resolve: {
     alias: {
