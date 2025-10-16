@@ -1,7 +1,16 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { createServer } from "./server";
+
+// Solo importamos el servidor si estamos en modo desarrollo
+let createServer: any;
+if (process.env.NODE_ENV === "development") {
+  try {
+    ({ createServer } = await import("./server"));
+  } catch {
+    // Ignorar si no existe el archivo
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -14,9 +23,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    outDir: "dist/spa",
+    outDir: "dist",
   },
-  plugins: [react(), expressPlugin()],
+  plugins: [react(), ...(mode === "serve" && createServer ? [expressPlugin()] : [])],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
@@ -28,12 +37,13 @@ export default defineConfig(({ mode }) => ({
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
+    apply: "serve", // Solo en desarrollo
     configureServer(server) {
-      const app = createServer();
-
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+      if (createServer) {
+        const app = createServer();
+        server.middlewares.use(app);
+      }
     },
   };
 }
+
