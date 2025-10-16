@@ -22,13 +22,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1️⃣ Instala y configura PNPM antes que nada
+      # 1️⃣ Instala PNPM (usando la versión indicada en package.json)
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9  # puedes ajustar según tu versión local
 
-      # 2️⃣ Configura Node.js y activa caché para pnpm
+      # 2️⃣ Configura Node.js con caché para pnpm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
